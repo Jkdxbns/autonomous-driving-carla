@@ -4,8 +4,14 @@
 [![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
 [![CARLA 0.9.15](https://img.shields.io/badge/CARLA-0.9.15-green.svg)](https://carla.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.4+-ee4c2c.svg)](https://pytorch.org/)
+[![Hugging Face Models](https://img.shields.io/badge/🤗%20Models-autonomous--driving--carla-yellow)](https://huggingface.co/jkdxbns/autonomous-driving-carla)
+[![Hugging Face Datasets](https://img.shields.io/badge/🤗%20Datasets-autonomous--driving--carla-blue)](https://huggingface.co/datasets/jkdxbns/autonomous-driving-carla)
 
 A complete autonomous driving system for the CARLA simulator, developed for **CMPE 789 - Robot Perception** at Rochester Institute of Technology.
+
+> **📦 Models & Datasets on Hugging Face:**
+> - [Models (YOLO + UFLD weights)](https://huggingface.co/jkdxbns/autonomous-driving-carla)
+> - [Datasets (YOLO + UFLD training data)](https://huggingface.co/datasets/jkdxbns/autonomous-driving-carla)
 
 ## 🎬 Demo Videos
 
@@ -122,8 +128,8 @@ This project implements a multi-modal perception and control pipeline for autono
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/YourUsername/carla-autonomous-driving.git
-   cd carla-autonomous-driving
+   git clone https://github.com/jkdxbns/autonomous-driving-carla.git
+   cd autonomous-driving-carla
    ```
 
 2. **Create the conda environment**:
@@ -148,9 +154,19 @@ This project implements a multi-modal perception and control pipeline for autono
    - **Linux**: `carla-0.9.15-py3.8-linux-x86_64.egg`
    - **Windows**: `carla-0.9.15-py3.8-win-amd64.egg`
 
-4. **Download model weights** (if using Git LFS):
+4. **Download model weights from Hugging Face**:
    ```bash
-   git lfs pull
+   # Install huggingface_hub if not already installed
+   pip install huggingface_hub
+   
+   # Download models
+   huggingface-cli download jkdxbns/autonomous-driving-carla yolo_carla_best.pt --local-dir models/
+   huggingface-cli download jkdxbns/autonomous-driving-carla ufld_carla_best.pth --local-dir models/
+   
+   # Or download via Python
+   from huggingface_hub import hf_hub_download
+   hf_hub_download(repo_id="jkdxbns/autonomous-driving-carla", filename="yolo_carla_best.pt", local_dir="models/")
+   hf_hub_download(repo_id="jkdxbns/autonomous-driving-carla", filename="ufld_carla_best.pth", local_dir="models/")
    ```
 
 ### Running the System
@@ -251,6 +267,51 @@ Fine-tuned on CARLA synthetic lane data using TuSimple format.
 
 ![UFLD Loss Curve](docs/ufld_loss_curve.png)
 ![UFLD Predictions](docs/ufld_predictions.png)
+
+## 📦 Datasets
+
+The training datasets are hosted on Hugging Face: [jkdxbns/autonomous-driving-carla](https://huggingface.co/datasets/jkdxbns/autonomous-driving-carla)
+
+### Dataset Contents
+
+| Dataset | Format | Description |
+|---------|--------|-------------|
+| `yolo_dataset/` | YOLO format | Object detection (vehicles, pedestrians, traffic lights, speed signs) |
+| `ufld_dataset/` | TuSimple format | Lane detection annotations |
+
+### Download Datasets
+
+```bash
+# Download YOLO dataset (ready to use)
+huggingface-cli download jkdxbns/autonomous-driving-carla yolo_dataset --repo-type dataset --local-dir datasets/
+
+# Download UFLD dataset (zipped for faster download)
+huggingface-cli download jkdxbns/autonomous-driving-carla ufld_dataset --repo-type dataset --local-dir datasets/
+
+# Extract UFLD images and labels
+cd datasets/ufld_dataset
+unzip images_train.zip -d .
+unzip images_val.zip -d .
+unzip images_test.zip -d .
+unzip labels_train.zip -d .
+unzip labels_val.zip -d .
+unzip labels_test.zip -d .
+```
+
+**Note:** UFLD images and labels are provided as zip files to reduce file count and speed up downloads. After extraction, the structure will be:
+```
+ufld_dataset/
+├── annotations/          # JSON annotation files
+├── images/
+│   ├── train/           # 7,000 training images
+│   ├── val/             # 2,000 validation images
+│   └── test/            # 1,000 test images
+├── labels/              # Label files for each image
+│   ├── train/
+│   ├── val/
+│   └── test/
+└── list/                # Split files (train_gt.txt, val_gt.txt, test.txt)
+```
 
 ## ⚙️ Configuration
 
@@ -362,6 +423,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👤 Author
 
 **Justin Mascarenhas**
+- GitHub: [@jkdxbns](https://github.com/jkdxbns)
 - Course: CMPE 789 - Robot Perception
 - Institution: Rochester Institute of Technology
 - Semester: Fall 2024
